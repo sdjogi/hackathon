@@ -30,7 +30,7 @@ public class LoginController {
         buffer.append("ft = FEET ");
         buffer.append("mi = MILES ");
         buffer.append("mm = MILIMETER ");
-        buffer.append("cm =CENTIMETER ");
+        buffer.append("cm = CENTIMETER ");
         buffer.append("m = METER ");
         return buffer.toString();
 
