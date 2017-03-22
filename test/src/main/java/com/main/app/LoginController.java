@@ -1,11 +1,16 @@
 
 package com.main.app;
 
+import java.util.Hashtable;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.util.UnitConverter;
 
 /**
  * @author jogish
@@ -13,26 +18,28 @@ import com.util.UnitConverter;
 @RestController
 public class LoginController {
 
-    @RequestMapping("/convertUnit/{fromUnit}/{toUnit}/{amount}")
+    @RequestMapping("/authenticate/{userId}/{password}")
     public String generate(@PathVariable
-    String fromUnit, @PathVariable
-    String toUnit, @PathVariable
-    String amount) {
-        UnitConverter from = new UnitConverter(fromUnit);
-        return String.valueOf(from.toMeters(Double.parseDouble(amount)));
-
+    String userId, @PathVariable
+    String password) {
+        return authenticate(userId, password) ? "SUCCESS" : "FAIL";
     }
 
-    @RequestMapping("/showallunits")
-    public String showAll() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("in = INCH ");
-        buffer.append("ft = FEET ");
-        buffer.append("mi = MILES ");
-        buffer.append("mm = MILIMETER ");
-        buffer.append("cm = CENTIMETER ");
-        buffer.append("m = METER ");
-        return buffer.toString();
-
+    private boolean authenticate(String username, String password) {
+        boolean ctx = false;
+        try {
+            Hashtable ldapEnv = new Hashtable(11);
+            ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+            ldapEnv.put(Context.PROVIDER_URL, "ldap://vps2cadc02syntelorg.com:389");
+            ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
+            ldapEnv.put(Context.SECURITY_PRINCIPAL, "syntelorg\\" + username);
+            ldapEnv.put(Context.SECURITY_CREDENTIALS, password+"");
+            LdapContext context = new InitialLdapContext(ldapEnv, null);
+            ctx = true;
+        } catch (NamingException nex) {
+            nex.printStackTrace();
+        }
+        return ctx;
     }
+
 }

@@ -54,7 +54,6 @@ public class CaptchaController {
             final WordToImage word2image = new DeformedComposedWordToImage(font, background, randomPaster, backDef,
                     textDef, postDef);
             java.awt.image.BufferedImage img = word2image.getImage(getCaptcha());
-
             ImageIO.write(img, "png", outputfile);
 
         }catch (Exception e){
